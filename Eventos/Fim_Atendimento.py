@@ -1,0 +1,1 @@
+class Fim_Atendimento:
