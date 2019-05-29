@@ -1,8 +1,8 @@
 class Fim_Cadastro:
 
-
-    #init
-   # tempo_cadastro
-
-
-    #def executa(self):
+  def __init__(self):
+    self.fila = []
+    self.tempo = 0
+    
+  def executa():
+    pass
