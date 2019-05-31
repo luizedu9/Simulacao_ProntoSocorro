@@ -10,11 +10,11 @@ class Fim_Atendimento:
   def aloca_paciente():
     pass
   
-  def aloca_atendente():
+  def aloca_medico():
     pass
   
   def desaloca_paciente():
     pass
   
-  def desaloca_atendente():
+  def desaloca_medico():
     pass
