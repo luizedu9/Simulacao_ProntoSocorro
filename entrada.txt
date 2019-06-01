@@ -29,7 +29,7 @@ T TTS 100
 ############################################################
 
 # Probabilidade da necessidade de medicação/exames.
-P PRO 90
+P PRO 50
 
 # Prioridade do atendimento.
 P PRI 20 20 20 20 20
