@@ -29,7 +29,7 @@ T TTS 100
 ############################################################
 
 # Probabilidade da necessidade de medicação/exames.
-P PRO 50
+P PRO 90
 
 # Prioridade do atendimento.
 P PRI 20 20 20 20 20
@@ -41,7 +41,7 @@ P PRI 20 20 20 20 20
 ############################################################
 
 # Quantidade de médicos.
-Q MED 2
+Q MED 5
 
 # Quantidade de enfermeiras.
 Q ENF 2
