@@ -4,8 +4,8 @@
 #
 #   Pronto Socorro - Introdução a Simulação
 #   
-#	Bruna Cristina Mendes
-#	Flávia Santos Ribeiro
+#   Bruna Cristina Mendes
+#   Flávia Santos Ribeiro
 #   Luiz Eduardo Pereira    
 
 #####################################################################################################################
@@ -68,29 +68,29 @@ def inicializar():
 # Essa função inicializa a FEL com os event listeners da chegada dos pacientes
 def inicializa_fel():
 
-	# FAZ A DISTRIBUIÇÃO E DESCOBRE A CHEGADA DOS PACIENTES ***************************
-	# SUPONTO Q ELES CHEGAM EM UMA LISTA ORDENANA, COLOCA NA FEL **********************
+    # FAZ A DISTRIBUIÇÃO E DESCOBRE A CHEGADA DOS PACIENTES ***************************
+    # SUPONTO Q ELES CHEGAM EM UMA LISTA ORDENANA, COLOCA NA FEL **********************
 
-	# chegada_pacientes é uma lista ordenada com apenas os horarios de chegada
+    # chegada_pacientes é uma lista ordenada com apenas os horarios de chegada
 
-	# Coloca um evento de 'fim_chegada' para cada paciente da simulação
-	p_id = 0
-	for chegada_paciente in chegada_pacientes:
-		fel.append( (chegada_paciente, 'fim_chegada', p_id, None) )
-		p_id += 1
-	return
+    # Coloca um evento de 'fim_chegada' para cada paciente da simulação
+    p_id = 0
+    for chegada_paciente in chegada_pacientes:
+        fel.append( (chegada_paciente, 'fim_chegada', p_id, None) )
+        p_id += 1
+    return
 
 # Dado uma tupla evento_fel, é encontrado a posição que este evento ficará na FEL seguindo sua variavel de tempo
 def insere_fel(evento_fel):
-	for i in range(len(fel)):
-		if (evento_fel[0] < fel[i][1]):
-			fel.insert(i, evento_fel[0])
-			break
-	return
+    for i in range(len(fel)):
+        if (evento_fel[0] < fel[i][1]):
+            fel.insert(i, evento_fel[0])
+            break
+    return
 
 # Retorna o proximo evento da FEL
 def retira_fel():
-	return(fel.pop(0))
+    return(fel.pop(0))
 
 #####################################################################################################################
 #                                                                                                                   #
@@ -127,6 +127,6 @@ inicializa_fel()
 
 # Enquanto tiver eventos na FEL, a simulação continua
 while (len(fel) > 0):
-	evento_fel = retira_fel()
+    evento_fel = retira_fel()
 
-	# FAZ COISAS ***************
+    # FAZ COISAS ***************
