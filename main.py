@@ -1,23 +1,41 @@
+# -*- coding: utf-8 -*-
 
-'''============DECLARACAO VARIAVEIS================'''
+#   CIÊNCIA DA COMPUTAÇÃO
+#
+#   Pronto Socorro - Introdução a Simulação
+#   
+#	Bruna Cristina Mendes
+#	Flávia Santos Ribeiro
+#   Luiz Eduardo Pereira    
 
-TTS = 0 #tempo maximo de simulacao em minutos
-PRO = 0 #probabilidade de necessidade de exames/medicamentos
-PRI = (0,0,0,0,0) #probabilidade da prioridade de atendimento dos pacientes
-MED = 0 #quatidade de medicos
-ENF = 0 #quantidade de enfermeiros
-ATD = 0 #quantidade de atendentes
-CHE =('',0.0,0.0,0.0) #distribuicao chegada_paciente
-CAD =('',0.0,0.0,0.0) #distribuicao cadastro_paciente
-TRI =('',0.0,0.0,0.0) #distribuicao triagem
-ATE =('',0.0,0.0,0.0) #distribuicao atendimento
-EXA =('',0.0,0.0,0.0) #distribuicao exames/medicamentos
-prioridade_enfermeiro_triagem = 80 #probabilidade da prioridade ser triagem
-prioridade_enfermeiro_medicamentos = 20 #probabilidade da prioridade ser medicamento
+#####################################################################################################################
+#                                                                                                                   #
+#                                                       PARAMETROS                                                  #
+#                                                                                                                   #
+#####################################################################################################################
 
+fel = [] # Lista temporal de atividades
+clock = 0 # Clock do tempo atual
 
-'''================================================='''
+TTS = 0 # tempo maximo de simulacao em minutos
+PRO = 0 # probabilidade de necessidade de exames/medicamentos
+PRI = (0,0,0,0,0) # probabilidade da prioridade de atendimento dos pacientes
+MED = 0 # quatidade de medicos
+ENF = 0 # quantidade de enfermeiros
+ATD = 0 # quantidade de atendentes
+CHE =('',0.0,0.0,0.0) # distribuicao chegada_paciente
+CAD =('',0.0,0.0,0.0) # distribuicao cadastro_paciente
+TRI =('',0.0,0.0,0.0) # distribuicao triagem
+ATE =('',0.0,0.0,0.0) # distribuicao atendimento
+EXA =('',0.0,0.0,0.0) # distribuicao exames/medicamentos
+prioridade_enfermeiro_triagem = 80 # probabilidade da prioridade ser triagem
+prioridade_enfermeiro_medicamentos = 20 # probabilidade da prioridade ser medicamento
 
+#####################################################################################################################
+#                                                                                                                   #
+#                                                        ARQUIVO                                                    #
+#                                                                                                                   #
+#####################################################################################################################
 
 def le_arquivo(nome):
 
@@ -59,6 +77,8 @@ def inicializar():
     le_arquivo('entrada.txt')
     print(TTS,' ',PRO, ' ',PRI,' ',MED,' ',ENF, ' ',ATD,' ',CHE,' ', CAD,' ',TRI,' ',ATE,' ',EXA)
     pass
+
+
     
 # Essa função encerra todas as atividades, liberando as pessoas de sua atual tarefa
 def encerra():
