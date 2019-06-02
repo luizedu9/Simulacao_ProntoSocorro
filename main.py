@@ -1,6 +1,4 @@
 
-# biling biling balalaize
-
 '''============DECLARACAO VARIAVEIS================'''
 
 TTS = 0 #tempo maximo de simulacao em minutos
