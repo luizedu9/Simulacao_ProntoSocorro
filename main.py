@@ -18,9 +18,13 @@
 #
 #   Aqui serão descritos coisas a fazer:
 #
+#       Transfomar fila de atendimento e medicamentos em fila de prioridades
 #       def inicializar_fel: Mudar em pacientes de rand para a distribuição como deveria ser  
 #       def fim_chegada: Mudar em prioridade de rand para distribuição
-#       def fim_chegada: Mudar em duração de atendimento rand para distribuição
+#       def fim_chegada: Mudar em duracao_cadastro de rand para distribuição
+#       def fim_cadastro: Mudar em duracao_cadastro de rand para distribuição
+#       def fim_cadastro: Mudar em duracao_triagem de rand para distribuição
+#       def fim_cadastro: Mudar em duracao_atendimento de rand para distribuição
 #
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -158,12 +162,60 @@ def fim_chegada(evento_fel):
 def fim_cadastro(evento_fel):
     # @@@ Existe paciente em aguarda cadastro?
     # @@@ Existe paciente em aguarda cadastro - SIM
-    """if (len(fila_cadastro > 0)):
+    if (len(fila_cadastro) > 0):
         paciente = fila_cadastro.pop(0)
+        # @@@ Sorteia duração do cadastro
+        duracao_cadastro = randint(1,5)
+        insere_fel( (clock + duracao_cadastro, 'fim_cadastro', paciente, evento_fel[3]) ) 
     # @@@ Existe paciente em aguarda cadastro - NÃO
     else:
-        pass
-    """
+        # @@@ Libera atendente
+        evento_fel[3].ocupado = False
+
+    # @@@ A prioridade é emergencia (5)?
+    # @@@ A prioridade é emergencia (5) - SIM
+    if (evento_fel[2].prioridade == 5):
+
+        # @@@ Existe medico ocioso?
+        entra_fila = True
+        for medico in medicos:
+
+            # @@@ Existe medico ocioso - SIM
+            if (medico.ocupado == False):
+                entra_fila = False
+                # @@@ Reserva medico
+                medico.ocupado = True
+                # @@@ Sorteia duração do atendimento
+                duracao_atendimento = randint(1,5)
+                # @@@ Agenda event_notice fim_atendimento
+                insere_fel( (clock + duracao_atendimento, 'fim_atendimento', evento_fel[2], medico) ) 
+                break
+
+        # @@@ Existe medico ocioso - NÃO
+        if (entra_fila):
+            fila_atendimento.append(evento_fel[2])
+    
+    # @@@ A prioridade é emergencia (5) - NÃO
+    else:
+        # @@@ Existe enfermeiro ocioso?
+        entra_fila = True
+        for enfermeiro in enfermeiros:
+
+            # @@@ Existe enfermeiro ocioso - SIM
+            if (enfermeiro.ocupado == False):
+                entra_fila = False
+                # @@@ Reserva enfermeiro
+                enfermeiro.ocupado = True
+                # @@@ Sorteia duração da triagem
+                duracao_triagem = randint(1,5)
+                # @@@ Agenda event_notice fim_triagem
+                insere_fel( (clock + duracao_triagem, 'fim_triagem', evento_fel[2], enfermeiro) ) 
+                break
+
+        # @@@ Existe enfermeiro ocioso - NÃO
+        if (entra_fila):
+            fila_triagem.append(evento_fel[2])
+
 
 #####################################################################################################################
 #                                                                                                                   #
