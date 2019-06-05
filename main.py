@@ -8,6 +8,31 @@
 #   Flávia Santos Ribeiro
 #   Luiz Eduardo Pereira    
 
+
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+#                                                     ATENÇÃO !!!
+#
+#   Aqui serão descritos coisas a fazer:
+#
+#       def inicializar_fel: Mudar em pacientes de rand para a distribuição como deveria ser  
+#       def fim_chegada: Mudar em prioridade de rand para distribuição
+#       def fim_chegada: Mudar em duração de atendimento rand para distribuição
+#
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+from random import randint
+
+from Entidades.Paciente import Paciente
+from Entidades.Atendente import Atendente
+from Entidades.Enfermeiro import Enfermeiro
+from Entidades.Medico import Medico
+
 #####################################################################################################################
 #                                                                                                                   #
 #                                                        ARQUIVO                                                    #
@@ -46,14 +71,6 @@ def le_arquivo(nome):
                     ENF = int(linha[2])
                 elif linha[1] == 'ATD':
                     ATD = int(linha[2])
-            else:
-                pass
-    
-# Essa função inicializa todos os fatores aleatorios, como horario de chegada dos pacientes, etc
-def inicializar():
-    le_arquivo('entrada.txt')
-    print(TTS,' ',PRO, ' ',PRI,' ',MED,' ',ENF, ' ',ATD,' ',CHE,' ', CAD,' ',TRI,' ',ATE,' ',EXA)
-    pass
 
 #####################################################################################################################
 #                                                                                                                   #
@@ -68,25 +85,29 @@ def inicializar():
 # Essa função inicializa a FEL com os event listeners da chegada dos pacientes
 def inicializa_fel():
 
-    # FAZ A DISTRIBUIÇÃO E DESCOBRE A CHEGADA DOS PACIENTES ***************************
-    # SUPONTO Q ELES CHEGAM EM UMA LISTA ORDENANA, COLOCA NA FEL **********************
+    # Gera pacientes
+    # MUDAR: NUMERO DE PACIENTES É ALETORIO SEGUINDO DISTRIBUIÇÃO?
+    # MUDAR: COLOCAR A DISTRIBUIÇÃO FUNCIONAR NO LUGAR DO RANDINT
+    n_pacientes = 3
+    tempo_chegada = []
+    for i in range(n_pacientes):
+        tempo_chegada.append(randint(0,100))
+    tempo_chegada.sort()
 
-    # chegada_pacientes é uma lista ordenada com apenas os horarios de chegada
+    # hora é uma lista ordenada com apenas os horarios de chegada
 
     # Coloca um evento de 'fim_chegada' para cada paciente da simulação
     p_id = 0
-    for chegada_paciente in chegada_pacientes:
-        fel.append( (chegada_paciente, 'fim_chegada', p_id, None) )
+    for hora in tempo_chegada:
+        fel.append( (hora, 'fim_chegada', Paciente(p_id), None) )
         p_id += 1
-    return
 
 # Dado uma tupla evento_fel, é encontrado a posição que este evento ficará na FEL seguindo sua variavel de tempo
 def insere_fel(evento_fel):
     for i in range(len(fel)):
-        if (evento_fel[0] < fel[i][1]):
-            fel.insert(i, evento_fel[0])
+        if (evento_fel[0] < fel[i][0]):
+            fel.insert(i, evento_fel)
             break
-    return
 
 # Retorna o proximo evento da FEL
 def retira_fel():
@@ -94,13 +115,107 @@ def retira_fel():
 
 #####################################################################################################################
 #                                                                                                                   #
-#                                                       PARAMETROS                                                  #
+#                                                 EVENTO FIM_CHEGADA                                                #
 #                                                                                                                   #
 #####################################################################################################################
 
+def fim_chegada(evento_fel):
+    # @@@ Sorteia prioridade
+    evento_fel[2].prioridade = randint(1,5)
+    
+    # @@@ Sorteia se precisa de exame/medicamento
+    boolean = randint(0, 1)
+    if (boolean == 0):
+        evento_fel[2].exame_medi = True
+    else:
+        evento_fel[2].exame_medi = False
+
+    # @@@ Existe atendente disponivel?
+    entra_fila = True
+    for atendente in atendentes:
+    
+        # @@@ Existe atendente disponivel - SIM
+        if (atendente.ocupado == False):
+            entra_fila = False
+            # @@@ Reserva atendente
+            atendente.ocupado = True
+            # @@@ Sorteia duração do cadastro
+            duracao_cadastro = randint(1,5)
+            # @@@ Agenda event_notice fim_cadastro
+            insere_fel( (clock + duracao_cadastro, 'fim_cadastro', evento_fel[2], atendente) ) 
+            break
+    
+    # @@@ Existe atendente disponivel - NÃO
+    if (entra_fila):
+        fila_cadastro.append(evento_fel[2])
+
+#####################################################################################################################
+#                                                                                                                   #
+#                                                 EVENTO FIM_CADASTRO                                               #
+#                                                                                                                   #
+#####################################################################################################################
+
+def fim_cadastro(evento_fel):
+    # @@@ Existe paciente em aguarda cadastro?
+    # @@@ Existe paciente em aguarda cadastro - SIM
+    """if (len(fila_cadastro > 0)):
+        paciente = fila_cadastro.pop(0)
+    # @@@ Existe paciente em aguarda cadastro - NÃO
+    else:
+        pass
+    """
+
+#####################################################################################################################
+#                                                                                                                   #
+#                                                 EVENTO FIM_TRIAGEM                                                #
+#                                                                                                                   #
+#####################################################################################################################
+
+def fim_triagem(evento_fel):
+    pass
+
+#####################################################################################################################
+#                                                                                                                   #
+#                                               EVENTO FIM_ATENDIMENTO                                              #
+#                                                                                                                   #
+#####################################################################################################################
+
+def fim_atendimento(evento_fel):
+    pass
+
+#####################################################################################################################
+#                                                                                                                   #
+#                                           EVENTO FIM_MEDICAMENTOS E EXAMES                                        #
+#                                                                                                                   #
+#####################################################################################################################
+
+def fim_medicamentosexames(evento_fel):
+    pass
+
+#####################################################################################################################
+#                                                                                                                   #
+#                                                         MAIN                                                      #
+#                                                                                                                   #
+#####################################################################################################################
+
+#####################################################
+#                                                   #
+#                   PARAMETROS                      #
+#                                                   #
+#####################################################
+
 fel = [] # Lista temporal de atividades
 clock = 0 # Clock do tempo atual
-fel_dict = {'fim_chegada': fim_chegada, 'fim_cadastro': fim_cadastro, 'fim_triagem': fim_triagem, 'fim_atendimento': fim_atendimento, 'fim_medicamentosexames': fim_medicamentosexames}
+clock_anterior = 0 # Clock da ultima mudança de tempo
+executa_fel = {'fim_chegada': fim_chegada, 'fim_cadastro': fim_cadastro, 'fim_triagem': fim_triagem, 'fim_atendimento': fim_atendimento, 'fim_medicamentosexames': fim_medicamentosexames}
+
+atendentes = []
+enfermeiros = []
+medicos = []
+fila_cadastro = []
+fila_triagem = []
+fila_atendimento = []
+fila_medicamentosexames = []
 
 TTS = 0 # tempo maximo de simulacao em minutos
 PRO = 0 # probabilidade de necessidade de exames/medicamentos
@@ -116,17 +231,34 @@ EXA =('',0.0,0.0,0.0) # distribuicao exames/medicamentos
 prioridade_enfermeiro_triagem = 80 # probabilidade da prioridade ser triagem
 prioridade_enfermeiro_medicamentos = 20 # probabilidade da prioridade ser medicamento
 
-#####################################################################################################################
-#                                                                                                                   #
-#                                                         MAIN                                                      #
-#                                                                                                                   #
-#####################################################################################################################
+#####################################################
+#                                                   #
+#                    EXECUÇÃO                       #
+#                                                   #
+#####################################################
 
-inicializar()
+le_arquivo('entrada.txt')
 inicializa_fel()
 
-# Enquanto tiver eventos na FEL, a simulação continua
-while (len(fel) > 0):
-    evento_fel = retira_fel()
+for i in range(ATD):
+    atendentes.append(Atendente(i))
+for i in range(ENF):
+    enfermeiros.append(Enfermeiro(i))
+for i in range(MED):
+    medicos.append(Medico(i))
 
-    # FAZ COISAS ***************
+# Enquanto tiver eventos na FEL, a simulação continua
+
+while (len(fel) > 0):
+    print()
+    print(fel)
+
+    evento_fel = retira_fel()
+    
+    # Se o tempo mudou, então guarda a hora do ultimo clock, ( * ?PRECISA DISSO? * ) 
+    if (evento_fel[1] != clock):
+        clock_anterior = clock
+    clock = evento_fel[0]
+        
+    # O nome função no qual se deve executar esta contida em evento_fel[1], e o executa_fel redireciona para a função correta.
+    executa_fel[evento_fel[1]](evento_fel)
