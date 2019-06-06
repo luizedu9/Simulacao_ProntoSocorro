@@ -41,7 +41,7 @@ P PRI 20 20 20 20 20
 ############################################################
 
 # Quantidade de médicos.
-Q MED 5
+Q MED 2
 
 # Quantidade de enfermeiras.
 Q ENF 2
