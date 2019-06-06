@@ -18,9 +18,17 @@
 #
 #   Aqui serão descritos coisas a fazer:
 #
+#       Debugar para ver se está correto
 #       def inicializar_fel: Mudar em pacientes de rand para a distribuição como deveria ser  
-#       def fim_chegada: Mudar em prioridade de rand para distribuição
-#       def fim_chegada: Mudar em duração de atendimento rand para distribuição
+#       def fim_chegada: Mudar em duracao_cadastro de rand para distribuição
+#       def fim_cadastro: Mudar em duracao_cadastro de rand para distribuição
+#       def fim_cadastro: Mudar em duracao_triagem de rand para distribuição
+#       def fim_cadastro: Mudar em duracao_atendimento de rand para distribuição
+#       def fim_triagem: Mudar em duracao_triagem de rand para distribuição
+#       def fim_triagem: Mudar em duracao_medicamentoexames de rand para distribuição
+#       def fim_triagem: Mudar em duracao_atendimento de rand para distribuição
+#       def fim_atendimento: Mudar em duracao_atendimento de rand para distribuição
+#       def fim_atendimento: Mudar em duracao_medicamentosexames de rand para distribuição
 #
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -88,7 +96,7 @@ def inicializa_fel():
     # Gera pacientes
     # MUDAR: NUMERO DE PACIENTES É ALETORIO SEGUINDO DISTRIBUIÇÃO?
     # MUDAR: COLOCAR A DISTRIBUIÇÃO FUNCIONAR NO LUGAR DO RANDINT
-    n_pacientes = 3
+    n_pacientes = 1
     tempo_chegada = []
     for i in range(n_pacientes):
         tempo_chegada.append(randint(0,100))
@@ -104,10 +112,14 @@ def inicializa_fel():
 
 # Dado uma tupla evento_fel, é encontrado a posição que este evento ficará na FEL seguindo sua variavel de tempo
 def insere_fel(evento_fel):
+    inseriu = False
     for i in range(len(fel)):
-        if (evento_fel[0] < fel[i][0]):
-            fel.insert(i, evento_fel)
-            break
+            if (evento_fel[0] < fel[i][0]):
+                fel.insert(i, evento_fel)
+                inseriu = True
+                break
+    if not(inseriu):
+        fel.append(evento_fel)
 
 # Retorna o proximo evento da FEL
 def retira_fel():
@@ -124,8 +136,8 @@ def fim_chegada(evento_fel):
     evento_fel[2].prioridade = randint(1,5)
     
     # @@@ Sorteia se precisa de exame/medicamento
-    boolean = randint(0, 1)
-    if (boolean == 0):
+    chance = randint(0, 100)
+    if (chance <= PRO):
         evento_fel[2].exame_medi = True
     else:
         evento_fel[2].exame_medi = False
@@ -147,6 +159,7 @@ def fim_chegada(evento_fel):
     
     # @@@ Existe atendente disponivel - NÃO
     if (entra_fila):
+        # @@@ Coloca paciente na fila de cadastro
         fila_cadastro.append(evento_fel[2])
 
 #####################################################################################################################
@@ -158,12 +171,63 @@ def fim_chegada(evento_fel):
 def fim_cadastro(evento_fel):
     # @@@ Existe paciente em aguarda cadastro?
     # @@@ Existe paciente em aguarda cadastro - SIM
-    """if (len(fila_cadastro > 0)):
+    if (len(fila_cadastro) > 0):
         paciente = fila_cadastro.pop(0)
+        # @@@ Sorteia duração do cadastro
+        duracao_cadastro = randint(1,5)
+        # @@@ Agenda event_notice fim_cadastro
+        insere_fel( (clock + duracao_cadastro, 'fim_cadastro', paciente, evento_fel[3]) ) 
     # @@@ Existe paciente em aguarda cadastro - NÃO
     else:
-        pass
-    """
+        # @@@ Libera atendente
+        evento_fel[3].ocupado = False
+
+    # @@@ A prioridade é emergencia (5)?
+    # @@@ A prioridade é emergencia (5) - SIM
+    if (evento_fel[2].prioridade == 5):
+
+        # @@@ Existe medico ocioso?
+        entra_fila = True
+        for medico in medicos:
+
+            # @@@ Existe medico ocioso - SIM
+            if (medico.ocupado == False):
+                entra_fila = False
+                # @@@ Reserva medico
+                medico.ocupado = True
+                # @@@ Sorteia duração do atendimento
+                duracao_atendimento = randint(1,5)
+                # @@@ Agenda event_notice fim_atendimento
+                insere_fel( (clock + duracao_atendimento, 'fim_atendimento', evento_fel[2], medico) ) 
+                break
+
+        # @@@ Existe medico ocioso - NÃO
+        if (entra_fila):
+            # @@@ Coloca paciente na fila de atendimento
+            insere_fila_prioridade(fila_atendimento, evento_fel[2])
+    
+    # @@@ A prioridade é emergencia (5) - NÃO
+    else:
+        # @@@ Existe enfermeiro ocioso?
+        entra_fila = True
+        for enfermeiro in enfermeiros:
+
+            # @@@ Existe enfermeiro ocioso - SIM
+            if (enfermeiro.ocupado == False):
+                entra_fila = False
+                # @@@ Reserva enfermeiro
+                enfermeiro.ocupado = True
+                # @@@ Sorteia duração da triagem
+                duracao_triagem = randint(1,5)
+                # @@@ Agenda event_notice fim_triagem
+                insere_fel( (clock + duracao_triagem, 'fim_triagem', evento_fel[2], enfermeiro) ) 
+                break
+
+        # @@@ Existe enfermeiro ocioso - NÃO
+        if (entra_fila):
+            # @@@ Coloca paciente na fila de triagem
+            fila_triagem.append(evento_fel[2])
+
 
 #####################################################################################################################
 #                                                                                                                   #
@@ -172,7 +236,49 @@ def fim_cadastro(evento_fel):
 #####################################################################################################################
 
 def fim_triagem(evento_fel):
-    pass
+    # @@@ Existe paciente aguardando triagem?
+    # @@@ Existe paciente aguardando triagem - SIM
+    if (len(fila_triagem) > 0):
+        paciente = fila_triagem.pop(0)
+        # @@@ Sorteia duração da triagem
+        duracao_triagem = randint(1,5)
+        # @@@ Agenda event_notice fim_triagem
+        insere_fel( (clock + duracao_triagem, 'fim_triagem', paciente, evento_fel[3]) ) 
+    # @@@ Existe paciente aguardando triagem - NÃO
+    else:
+        
+        # @@@ Existe paciente aguardando exames/medicamento?
+        # @@@ Existe paciente aguardando exames/medicamento - SIM
+        if (len(fila_medicamentosexames) > 0):
+            paciente = fila_medicamentosexames.pop(0)
+            # @@@ Sorteia duração dos exames/medicamentos
+            duracao_medicamentoexames = randint(1,5)
+            # @@@ Agenda event_notice fim_medicamentosexames
+            insere_fel( (clock + duracao_medicamentoexames, 'fim_medicamentosexames', paciente, evento_fel[3]) ) 
+        # @@@ Existe paciente aguardando exames/medicamento - NÃO
+        else:
+            # @@@ Libera enfermerio
+            evento_fel[3].ocupado = False
+
+    # @@@ Existe medico disponivel?
+    entra_fila = True
+    for medico in medicos:
+
+        # @@@ Existe medico disponivel - SIM
+        if (medico.ocupado == False):
+            entra_fila = False
+            # @@@ Reserva medico
+            medico.ocupado = True
+            # @@@ Sorteia duração do atendimento
+            duracao_atendimento = randint(1,5)
+            # @@@ Agenda event_notice fim_atendimento
+            insere_fel( (clock + duracao_atendimento, 'fim_atendimento', evento_fel[2], medico) ) 
+            break
+    
+    # @@@ Existe medico disponivel - NÃO
+    if (entra_fila):
+        # @@@ Coloca paciente na fila de atendimento
+        insere_fila_prioridade(fila_atendimento, evento_fel[2])
 
 #####################################################################################################################
 #                                                                                                                   #
@@ -181,7 +287,45 @@ def fim_triagem(evento_fel):
 #####################################################################################################################
 
 def fim_atendimento(evento_fel):
-    pass
+    # @@@ Existe paciente aguardando atendimento?
+    # @@@ Existe paciente aguardando atendimento - SIM
+    if (len(fila_atendimento) > 0):
+        paciente = fila_atendimento.pop(0)
+        # @@@ Sorteia duração do atendimento
+        duracao_atendimento = randint(1,5)
+        # @@@ Agenda event_notice fim_atendimento
+        insere_fel( (clock + duracao_atendimento, 'fim_atendimento', paciente, evento_fel[3]) ) 
+    # @@@ Existe paciente aguardando atendimento - NÃO
+    else:
+        evento_fel[3].ocupado = False
+
+    # @@@ Paciente precisa de medicamentos/exame?
+    # @@@ Paciente precisa de medicamentos/exame - SIM
+    if (evento_fel[2].exame_medi):
+        # @@@ Existe enfermeiro ocioso?
+        entra_fila = True
+        for enfermeiro in enfermeiros:
+
+            # @@@ Existe enfermeiro ocioso - SIM
+            if (enfermeiro.ocupado == False):
+                entra_fila = False
+                # @@@ Reserva enfermeiro
+                enfermeiro.ocupado = True
+                # @@@ Sorteia duração dos medicamentos/exames
+                duracao_medicamentoexames = randint(1,5)
+                # @@@ Agenda event_notice fim_medicamentosexames
+                insere_fel( (clock + duracao_medicamentoexames, 'fim_medicamentosexames', evento_fel[2], enfermeiro) ) 
+                break
+
+        # @@@ Existe enfermeiro ocioso - NÃO
+        if (entra_fila):
+            # @@@ Coloca paciente na fila de exames/medicamentos
+            insere_fila_prioridade(fila_medicamentosexames, evento_fel[2])
+
+    # @@@ Paciente precisa de medicamentos/exame - NÃO
+    else:
+        # @@@ Libera paciente
+        pass
 
 #####################################################################################################################
 #                                                                                                                   #
@@ -190,7 +334,48 @@ def fim_atendimento(evento_fel):
 #####################################################################################################################
 
 def fim_medicamentosexames(evento_fel):
-    pass
+    # @@@ Existe paciente aguardando exames/medicamento?
+    # @@@ Existe paciente aguardando exames/medicamento - SIM
+    if (len(fila_medicamentosexames) > 0):
+        paciente = fila_medicamentosexames.pop(0)
+        # @@@ Sorteia duração dos exames/medicamentos
+        duracao_medicamentoexames = randint(1,5)
+        # @@@ Agenda event_notice fim_medicamentosexames
+        insere_fel( (clock + duracao_medicamentoexames, 'fim_medicamentosexames', paciente, evento_fel[3]) ) 
+
+    # @@@ Existe paciente aguardando exames/medicamento - NÃO
+    else:
+        # @@@ Existe paciente aguardando triagem?
+        # @@@ Existe paciente aguardando triagem - SIM
+        if (len(fila_triagem) > 0):
+            paciente = fila_triagem.pop(0)
+            # @@@ Sorteia duração da triagem
+            duracao_triagem = randint(1,5)
+            # @@@ Agenda event_notice fim_triagem
+            insere_fel( (clock + duracao_triagem, 'fim_triagem', paciente, evento_fel[3]) ) 
+        
+        # @@@ Existe paciente aguardando triagem - NÃO
+        else:
+            # @@@ Libera enfermerio
+            evento_fel[3].ocupado = False
+
+#####################################################################################################################
+#                                                                                                                   #
+#                                                        OUTROS                                                     #
+#                                                                                                                   #
+#####################################################################################################################
+
+def insere_fila_prioridade(fila, paciente):
+    inseriu = False
+    for i in range(len(fila)):
+            print(fila[i].id)
+            if (paciente.prioridade > fila[i].prioridade):
+                fila.insert(i, paciente)
+                inseriu = True
+                break
+    if not(inseriu):
+        fila.append(paciente)
+    return(fila)
 
 #####################################################################################################################
 #                                                                                                                   #
@@ -206,7 +391,6 @@ def fim_medicamentosexames(evento_fel):
 
 fel = [] # Lista temporal de atividades
 clock = 0 # Clock do tempo atual
-clock_anterior = 0 # Clock da ultima mudança de tempo
 executa_fel = {'fim_chegada': fim_chegada, 'fim_cadastro': fim_cadastro, 'fim_triagem': fim_triagem, 'fim_atendimento': fim_atendimento, 'fim_medicamentosexames': fim_medicamentosexames}
 
 atendentes = []
@@ -237,6 +421,27 @@ prioridade_enfermeiro_medicamentos = 20 # probabilidade da prioridade ser medica
 #                                                   #
 #####################################################
 
+"""
+pacientes = []
+for i in range(10):
+    pacientes.append(Paciente(i))
+pacientes[0].prioridade = 1
+pacientes[1].prioridade = 5
+pacientes[2].prioridade = 3
+pacientes[3].prioridade = 3
+pacientes[4].prioridade = 1
+pacientes[5].prioridade = 4
+pacientes[6].prioridade = 2
+pacientes[7].prioridade = 5
+pacientes[8].prioridade = 1
+pacientes[9].prioridade = 5
+filosa = []
+for i in range(10):
+    filosa = insere_fila_prioridade(filosa, pacientes[i])
+for i in range(10):
+    print(str(filosa[i].id) + ' ' + str(filosa[i].prioridade))
+"""
+
 le_arquivo('entrada.txt')
 inicializa_fel()
 
@@ -255,10 +460,9 @@ while (len(fel) > 0):
 
     evento_fel = retira_fel()
     
-    # Se o tempo mudou, então guarda a hora do ultimo clock, ( * ?PRECISA DISSO? * ) 
-    if (evento_fel[1] != clock):
-        clock_anterior = clock
-    clock = evento_fel[0]
         
     # O nome função no qual se deve executar esta contida em evento_fel[1], e o executa_fel redireciona para a função correta.
     executa_fel[evento_fel[1]](evento_fel)
+
+print()
+print(fel)
