@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+
+#   CIÊNCIA DA COMPUTAÇÃO
+#
+#   Pronto Socorro - Introdução a Simulação
+#   
+#   Bruna Cristina Mendes
+#   Flávia Santos Ribeiro
+#   Luiz Eduardo Pereira  
+
 class Paciente:
 
     def __init__(self,id):
@@ -6,9 +16,13 @@ class Paciente:
         self.exame_medi = False
         self.clock = 0.0
         self.tempo_fila_cadastro = 0.0
+        self.tempo_entrou_fila_cadastro = 0.0
         self.tempo_fila_triagem = 0.0
+        self.tempo_entrou_fila_triagem = 0.0
         self.tempo_fila_atendimento = 0.0
+        self.tempo_entrou_fila_atendimento = 0.0
         self.tempo_fila_medicamento = 0.0
+        self.tempo_entrou_fila_medicamento = 0.0
 
     def tempo_fila_total(self):
         return(self.tempo_fila_cadastro + self.tempo_fila_triagem + self.tempo_fila_atendimento + self.tempo_fila_medicamento)
