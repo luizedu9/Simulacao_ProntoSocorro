@@ -16,6 +16,9 @@
 #
 #   Aqui serão descritos coisas a fazer:
 #       
+#       Fazer KPI Tamanho Medio em Fila
+#       Resolver problema, alguns clientes entram na fila, mas nunca saem ou são atendidos por causa do tempo final da simulação,
+#           o que fazer com eles pra contar o KPI?
 #       Os prints de saida está por pessoa, deve-se fazer a media ou outra coisa de acordo com a necessidade do KPI
 #       Fazer log de saída com os KPIs
 #       Debugar para ver se está correto
@@ -516,5 +519,5 @@ for paciente in pacientes:
     print(' | C: ' + str(paciente.tempo_fila_cadastro) + ' | T: ' + str(paciente.tempo_fila_triagem) + ' | A: ' + str(paciente.tempo_fila_atendimento) + ' | M: ' + str(paciente.tempo_fila_medicamento))
 
 print()
-print('TEMPO MEDIO DE FILA:')
+print('TAMANHO MEDIO DE FILA:')
 print()
