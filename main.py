@@ -115,8 +115,8 @@ def duracao_evento(distribuicao):
 
     if distribuicao[0] == 'TRI':
         vetor = np.random.triangular(distribuicao[1], distribuicao[2], distribuicao[3], 100000)
-        x = np.random.choice(vetor,1)
-        return x
+        y = np.random.choice(vetor,1)
+        return y
 
     if distribuicao[0] == 'UNI':
         pass
