@@ -17,10 +17,8 @@
 #   Aqui serão descritos coisas a fazer:
 #
 #       Fazer tratamento da distribuicao de enfermeiros entre a triagem e medicamentos
-#       Fazer KPI Tamanho Medio em Fila
 #       Resolver problema, alguns clientes entram na fila, mas nunca saem ou são atendidos por causa do tempo final da simulação,
 #           o que fazer com eles pra contar o KPI?
-#       Os prints de saida está por pessoa, deve-se fazer a media ou outra coisa de acordo com a necessidade do KPI
 #       Fazer log de saída com os KPIs
 #       Debugar para ver se está correto
 #       def inicializar_fel: Mudar em pacientes de rand para a distribuição como deveria ser  
@@ -88,7 +86,7 @@ def le_arquivo(nome):
 
 #####################################################################################################################
 #                                                                                                                   #
-#                                              SORTEIA DURACAO DOS EVENTOS                                            #
+#                                             SORTEIA DURAÇÃO DOS EVENTOS                                           #
 #                                                                                                                   #
 #####################################################################################################################
 def duracao_evento(distribuicao):
@@ -512,8 +510,8 @@ def insere_fila_prioridade(fila, paciente):
 
 fel = [] # Lista temporal de atividades
 clock = 0 # Clock do tempo atual
+clock_anterior = 0 # Guarda o ultimo tempo antes da mudança do Clock
 executa_fel = {'fim_chegada': fim_chegada, 'fim_cadastro': fim_cadastro, 'fim_triagem': fim_triagem, 'fim_atendimento': fim_atendimento, 'fim_medicamentosexames': fim_medicamentosexames}
-
 
 atendentes = []
 enfermeiros = []
@@ -523,6 +521,12 @@ fila_cadastro = [] #fila de prioridade
 fila_triagem = [] #fila de prioridade
 fila_atendimento = [] #fila de prioridade
 fila_medicamentosexames = [] #fila de prioridade
+
+# KPI Tamanho Medio da fila
+tamanho_medio_cadastro = 0
+tamanho_medio_triagem = 0
+tamanho_medio_atendimento = 0
+tamanho_medio_medicamento = 0
 
 #VARIAVEIS GLOBAIS
 TTS = 0 # tempo maximo de simulacao em minutos
@@ -556,10 +560,17 @@ for i in range(MED):
     medicos.append(Medico(i))
 
 # Enquanto tiver eventos na FEL, a simulação continua
-
 while (len(fel) > 0) and (clock <= TTS):
 
-    #print(fel)
+    # Essa parte é utilizada pra medir o KPI "Tamanho Medio de Fila"
+    if (int(clock) > int(clock_anterior)):
+        for i in range(int(clock_anterior), int(clock)):
+            tamanho_medio_cadastro += len(fila_cadastro)
+            tamanho_medio_triagem += len(fila_triagem)
+            tamanho_medio_atendimento += len(fila_atendimento)
+            tamanho_medio_medicamento += len(fila_medicamentosexames)
+
+        clock_anterior = clock
 
     # Retira o evento que será computado
     evento_fel = retira_fel()
@@ -589,13 +600,11 @@ for atendente in atendentes:
     if atendente.ocupado == False:
         atendente.set_tempo_ocioso(clock)
     print(atendente.total_ocioso)
-
 print('TEMPO OCIOSO ENFERMEIROS:')
 for enfermeiro in enfermeiros:
     if enfermeiro.ocupado == False:
         enfermeiro.set_tempo_ocioso(clock)
     print(enfermeiro.total_ocioso)
-
 print('TEMPO OCIOSO MEDICOS:')
 for medico in medicos:
     if (medico.ocupado == False):
@@ -614,9 +623,33 @@ for paciente in fila_atendimento:
     paciente.tempo_fila_atendimento = clock - paciente.tempo_entrou_fila_atendimento
 for paciente in fila_medicamentosexames:
     paciente.tempo_fila_medicamento = clock - paciente.tempo_entrou_fila_medicamento
+media_cadastro = 0
+media_triagem = 0
+media_atendimento = 0
+media_medicamento = 0
 for paciente in pacientes:
-    print(' | C: ' + str(paciente.tempo_fila_cadastro) + ' | T: ' + str(paciente.tempo_fila_triagem) + ' | A: ' + str(paciente.tempo_fila_atendimento) + ' | M: ' + str(paciente.tempo_fila_medicamento))
+    media_cadastro += paciente.tempo_fila_cadastro
+    media_triagem += paciente.tempo_fila_triagem
+    media_atendimento += paciente.tempo_fila_atendimento
+    media_medicamento += paciente.tempo_fila_medicamento
+    #print(' | C: ' + str(paciente.tempo_fila_cadastro) + ' | T: ' + str(paciente.tempo_fila_triagem) + ' | A: ' + str(paciente.tempo_fila_atendimento) + ' | M: ' + str(paciente.tempo_fila_medicamento))
+media_cadastro = media_cadastro / len(pacientes)
+media_triagem = media_triagem / len(pacientes)
+media_atendimento = media_atendimento / len(pacientes)
+media_medicamento = media_medicamento / len(pacientes)
+print('CADASTRO: ' + str(media_cadastro))
+print('TRIAGEM: ' + str(media_triagem))
+print('ATENDIMENTO: ' + str(media_atendimento))
+print('MEDICAMENTOS/EXAMES: ' + str(media_medicamento))
 
 print()
 print('TAMANHO MEDIO DE FILA:')
 print()
+tamanho_medio_cadastro = tamanho_medio_cadastro / TTS
+tamanho_medio_triagem = tamanho_medio_triagem / TTS
+tamanho_medio_atendimento = tamanho_medio_atendimento / TTS
+tamanho_medio_medicamento = tamanho_medio_medicamento / TTS
+print('CADASTRO: ' + str(tamanho_medio_cadastro))
+print('TRIAGEM: ' + str(tamanho_medio_triagem))
+print('ATENDIMENTO: ' + str(tamanho_medio_atendimento))
+print('MEDICAMENTOS/EXAMES: ' + str(tamanho_medio_medicamento))
