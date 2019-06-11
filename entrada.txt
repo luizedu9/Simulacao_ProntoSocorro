@@ -20,7 +20,7 @@
 
 # Tempo maximo de simulacao, em minutos. O valor abaixo 
 # corresponde a x dias * x horas * x minutos.
-T TTS 100
+T TTS 300
 
 ############################################################
 #                                                          #
@@ -73,16 +73,16 @@ Q ATD 2
 # OBS.: Os parâmetros não utilizados devem ser iguais a zero.
 #
 # Tempo de chegada do paciente.
-T CHE EXP 1 2 3
+T CHE UNI 0 200 0
 
 # Tempo de cadastro.
-T CAD TRI 2 2 2
+T CAD TRI 1 2 5
 
 # Tempo de triagem.
-T TRI TRI 1 1 1
+T TRI TRI 2 3 7
 
 # Tempo de atendimento.
-T ATE TRI 3 4 5
+T ATE TRI 5 8 10
 
 # Tempo de exames/medicamentos.
-T EXA TRI 5 5 5
+T EXA TRI 15 20 60
