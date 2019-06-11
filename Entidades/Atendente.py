@@ -15,6 +15,7 @@ class Atendente:
         self.total_ocioso = 0.0
         self.inicio_horario_ocioso = 0.0
         self.ocupado = False
+        self.cargo = 'Atendente'
 
     # Quando alocar para uma ação, olhar horario atual e o horario em que começou a ficar ocioso 
     def set_tempo_ocioso(self, horario_atual):
