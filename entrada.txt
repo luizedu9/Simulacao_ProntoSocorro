@@ -44,7 +44,7 @@ P PRI 20 20 20 20 20
 Q MED 2
 
 # Quantidade de enfermeiras.
-Q ENF 2
+Q ENF 4
 
 # Quantidade de atendentes.
 Q ATD 2
@@ -73,7 +73,7 @@ Q ATD 2
 # OBS.: Os parâmetros não utilizados devem ser iguais a zero.
 #
 # Tempo de chegada do paciente.
-T CHE UNI 0 200 0
+T CHE EXP 300 0 0
 
 # Tempo de cadastro.
 T CAD TRI 1 2 5
