@@ -15,14 +15,10 @@
 #                                                     ATENÇÃO !!!
 #
 #   Aqui serão descritos coisas a fazer:
-#      - Olhar o tempo que ta passando do tempo total (ultimo evento do agendamento)
 #      - Fazer tratamento da distribuicao de enfermeiros entre a triagem e medicamentos
-#      - Resolver problema, alguns clientes entram na fila, mas nunca saem ou são atendidos por causa do tempo final da simulação,
-#           o que fazer com eles pra contar o KPI?
-#      - Fazer log de saída com os KPIs (comparar 100 execucoes)
 #      - Debugar para ver se está correto
-#      - Conferir tempo medio em fila e tamanho medio da fila: valores parecidos demais? RESOLVIDO???
 #      - olhar artigo para saber as distribuicoes do arquivo de entrada
+#
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -30,6 +26,7 @@
 from random import randint
 import random
 import numpy as np
+import sys
 
 from Entidades.Paciente import Paciente
 from Entidades.Atendente import Atendente
@@ -534,9 +531,20 @@ def insere_fila_prioridade(fila, paciente):
 
 #####################################################
 #                                                   #
-#                   COLECOES                        #
+#                   COLEÇÕES                        #
 #                                                   #
 #####################################################
+
+try:
+    kpi_ociosidade = sys.argv[1]
+    kpi_tempo = sys.argv[2]
+    kpi_tamanho = sys.argv[3]
+except:
+    print("ERRO - PARAMETROS DE KPI ESPERADOS (OCIOSIDADE, TEMPO, TAMANHO) ")
+    print("OCIOSIDADE: atendente / enfermeiro / medico")
+    print("TEMPO: cadastro, triagem, atendimento, medicamento")
+    print("TAMANHO: cadastro, triagem, atendimento, medicamento")
+    exit()
 
 fel = [] # Lista temporal de atividades
 clock = 0 # Clock do tempo atual
@@ -558,6 +566,9 @@ tamanho_medio_triagem = 0
 tamanho_medio_atendimento = 0
 tamanho_medio_medicamento = 0
 
+prioridade_enfermeiro_triagem = 80 # probabilidade da prioridade ser triagem
+prioridade_enfermeiro_medicamentos = 20 # probabilidade da prioridade ser medicamento
+
 #VARIAVEIS GLOBAIS
 TTS = 0 # tempo maximo de simulacao em minutos
 PRO = 0 # probabilidade de necessidade de exames/medicamentos
@@ -570,8 +581,6 @@ CAD =('',0.0,0.0,0.0) # distribuicao cadastro_paciente
 TRI =('',0.0,0.0,0.0) # distribuicao triagem
 ATE =('',0.0,0.0,0.0) # distribuicao atendimento
 EXA =('',0.0,0.0,0.0) # distribuicao exames/medicamentos
-prioridade_enfermeiro_triagem = 80 # probabilidade da prioridade ser triagem
-prioridade_enfermeiro_medicamentos = 20 # probabilidade da prioridade ser medicamento
 
 #####################################################
 #                                                   #
@@ -604,11 +613,16 @@ while (len(fel) > 0) and (clock <= TTS):
 
     # Retira o evento que será computado
     evento_fel = retira_fel()
+    if (evento_fel[0] > TTS):
+        break
+    
+    # Print da FEL
+    """
     if evento_fel[3] != None:
         print('Retirou da FEL: ' + str(evento_fel[1]) + '| hora: ' +str(evento_fel[0])+ '| paciente: '+str(evento_fel[2].id)+'|'+ str(evento_fel[3].cargo) +': '+ str(evento_fel[3].id))
     else:
         print('Retirou da FEL: ' + str(evento_fel[1]) + '| hora: ' +str(evento_fel[0])+ '| paciente: '+ str(evento_fel[2].id))
-
+    """
 
     # Muda o relogio para o tempo atual
     clock = evento_fel[0]
@@ -625,21 +639,34 @@ print()
 print('OCIOSIDADE:')
 print()
 print('TEMPO OCIOSO ATENDENTES:')
+total_atendentes = 0 
 for atendente in atendentes:
     # Se estava ocioso na hora da finalização, calcula seu tempo ocioso
     if atendente.ocupado == False:
         atendente.set_tempo_ocioso(clock)
     print(atendente.total_ocioso)
+    total_atendentes += atendente.total_ocioso
 print('TEMPO OCIOSO ENFERMEIROS:')
+total_enfermeiros = 0
 for enfermeiro in enfermeiros:
     if enfermeiro.ocupado == False:
         enfermeiro.set_tempo_ocioso(clock)
     print(enfermeiro.total_ocioso)
+    total_enfermeiros += enfermeiro.total_ocioso
 print('TEMPO OCIOSO MEDICOS:')
+total_medicos = 0
 for medico in medicos:
     if (medico.ocupado == False):
         medico.set_tempo_ocioso(clock)
     print(medico.total_ocioso)
+    total_medicos += medico.total_ocioso
+
+if (kpi_ociosidade == 'atendente'):
+    ociosidade = total_atendentes
+if (kpi_ociosidade == 'enfermeiro'):
+    ociosidade = total_enfermeiros
+if (kpi_ociosidade == 'medico'):
+    ociosidade = total_medicos
 
 print()
 print('TEMPO MEDIO DE FILA:')
@@ -672,6 +699,15 @@ print('TRIAGEM: ' + str(media_triagem))
 print('ATENDIMENTO: ' + str(media_atendimento))
 print('MEDICAMENTOS/EXAMES: ' + str(media_medicamento))
 
+if (kpi_tempo == 'cadastro'):
+    tempo = media_cadastro
+if (kpi_tempo == 'triagem'):
+    tempo = media_triagem
+if (kpi_tempo == 'atendimento'):
+    tempo = media_atendimento
+if (kpi_tempo == 'medicamento'):
+    tempo = media_medicamento
+
 print()
 print('TAMANHO MEDIO DE FILA:')
 print()
@@ -683,3 +719,15 @@ print('CADASTRO: ' + str(tamanho_medio_cadastro))
 print('TRIAGEM: ' + str(tamanho_medio_triagem))
 print('ATENDIMENTO: ' + str(tamanho_medio_atendimento))
 print('MEDICAMENTOS/EXAMES: ' + str(tamanho_medio_medicamento))
+
+if (kpi_tamanho == 'cadastro'):
+    tamanho = tamanho_medio_cadastro
+if (kpi_tamanho == 'triagem'):
+    tamanho = tamanho_medio_triagem
+if (kpi_tamanho == 'atendimento'):
+    tamanho = tamanho_medio_atendimento
+if (kpi_tamanho == 'medicamento'):
+    tamanho = tamanho_medio_medicamento
+
+with open('resultados.csv', 'a+') as file:
+    file.write(str("%.2f" % ociosidade) + '\t' + str("%.2f" % tempo) + '\t' + str("%.2f" % tamanho) + '\n')
