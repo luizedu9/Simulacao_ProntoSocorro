@@ -318,24 +318,23 @@ def fim_cadastro(evento_fel):
 def fim_triagem(evento_fel):
 
     global TRI, EXA,ATE
-    # @@@ Existe paciente aguardando triagem?
-    # @@@ Existe paciente aguardando triagem - SIM
-    if len(fila_triagem) > 0:
-        paciente = fila_triagem.pop(0)
-        # Calcula tempo em que paciente ficou na fila
-        paciente.tempo_fila_triagem = clock - paciente.tempo_entrou_fila_triagem
-        # @@@ Sorteia duração da triagem
-        #duracao_triagem = randint(1,5)
-        duracao_triagem = duracao_evento(TRI)
-        # @@@ Agenda event_notice fim_triagem
-        insere_fel((clock + duracao_triagem, 'fim_triagem', paciente, evento_fel[3]))
-        #print("Inseriu na FEL: fim_triagem | hora:" + str(clock + duracao_triagem) + "| paciente: " + str(paciente.id) + "| enfermeiro: " + str(evento_fel[3].id))
-    # @@@ Existe paciente aguardando triagem - NÃO
-    else:
-        
-        # @@@ Existe paciente aguardando exames/medicamento?
-        # @@@ Existe paciente aguardando exames/medicamento - SIM
-        if len(fila_medicamentosexames) > 0:
+
+    # @@@ Existe paciente aguardando triagem e medicamento?
+    # @@@ Existe paciente aguardando triagem e medicamento - SIM
+    if (len(fila_triagem) > 0 and len(fila_medicamentosexames) > 0):
+        # @@@ Sorteia se enfermeiro irá para triagem
+        if (randint(0, 100) < prioridade_triagem):
+            paciente = fila_triagem.pop(0)
+            # Calcula tempo em que paciente ficou na fila
+            paciente.tempo_fila_triagem = clock - paciente.tempo_entrou_fila_triagem
+            # @@@ Sorteia duração da triagem
+            #duracao_triagem = randint(1,5)
+            duracao_triagem = duracao_evento(TRI)
+            # @@@ Agenda event_notice fim_triagem
+            insere_fel((clock + duracao_triagem, 'fim_triagem', paciente, evento_fel[3]))
+            #print("Inseriu na FEL: fim_triagem | hora:" + str(clock + duracao_triagem) + "| paciente: " + str(paciente.id) + "| enfermeiro: " + str(evento_fel[3].id))
+        # @@@ Sorteia se enfermeiro irá para medicamento
+        else:
             paciente = fila_medicamentosexames.pop(0)
             # Calcula tempo em que paciente ficou na fila
             paciente.tempo_fila_medicamento = clock - paciente.tempo_entrou_fila_medicamento
@@ -345,10 +344,38 @@ def fim_triagem(evento_fel):
             # @@@ Agenda event_notice fim_medicamentosexames
             insere_fel((clock + duracao_medicamentoexames, 'fim_medicamentosexames', paciente, evento_fel[3]))
             #print("Inseriu na FEL: fim_medicamentosexames | hora:" + str(clock + duracao_medicamentoexames) + "| paciente: " + str(paciente.id) + "| enfermeiro: " + str(evento_fel[3].id))
-        # @@@ Existe paciente aguardando exames/medicamento - NÃO
+    # @@@ Existe paciente aguardando triagem e medicamento - NÃO
+    else:
+        # @@@ Existe paciente aguardando triagem?
+        # @@@ Existe paciente aguardando triagem - SIM
+        if len(fila_triagem) > 0:
+            paciente = fila_triagem.pop(0)
+            # Calcula tempo em que paciente ficou na fila
+            paciente.tempo_fila_triagem = clock - paciente.tempo_entrou_fila_triagem
+            # @@@ Sorteia duração da triagem
+            #duracao_triagem = randint(1,5)
+            duracao_triagem = duracao_evento(TRI)
+            # @@@ Agenda event_notice fim_triagem
+            insere_fel((clock + duracao_triagem, 'fim_triagem', paciente, evento_fel[3]))
+            #print("Inseriu na FEL: fim_triagem | hora:" + str(clock + duracao_triagem) + "| paciente: " + str(paciente.id) + "| enfermeiro: " + str(evento_fel[3].id))
+        # @@@ Existe paciente aguardando triagem - NÃO
         else:
-            # @@@ Libera enfermerio
-            evento_fel[3].libera(clock)
+            # @@@ Existe paciente aguardando exames/medicamento?
+            # @@@ Existe paciente aguardando exames/medicamento - SIM
+            if len(fila_medicamentosexames) > 0:
+                paciente = fila_medicamentosexames.pop(0)
+                # Calcula tempo em que paciente ficou na fila
+                paciente.tempo_fila_medicamento = clock - paciente.tempo_entrou_fila_medicamento
+                # @@@ Sorteia duração dos exames/medicamentos
+                #duracao_medicamentoexames = randint(1,5)
+                duracao_medicamentoexames = duracao_evento(EXA)
+                # @@@ Agenda event_notice fim_medicamentosexames
+                insere_fel((clock + duracao_medicamentoexames, 'fim_medicamentosexames', paciente, evento_fel[3]))
+                #print("Inseriu na FEL: fim_medicamentosexames | hora:" + str(clock + duracao_medicamentoexames) + "| paciente: " + str(paciente.id) + "| enfermeiro: " + str(evento_fel[3].id))
+            # @@@ Existe paciente aguardando exames/medicamento - NÃO
+            else:
+                # @@@ Libera enfermerio
+                evento_fel[3].libera(clock)
 
     # @@@ Existe medico disponivel?
     entra_fila = True
@@ -440,23 +467,12 @@ def fim_atendimento(evento_fel):
 def fim_medicamentosexames(evento_fel):
 
     global EXA, TRI
-    # @@@ Existe paciente aguardando exames/medicamento?
-    # @@@ Existe paciente aguardando exames/medicamento - SIM
-    if len(fila_medicamentosexames) > 0:
-        paciente = fila_medicamentosexames.pop(0)
-        # Calcula tempo em que paciente ficou na fila
-        paciente.tempo_fila_medicamento = clock - paciente.tempo_entrou_fila_medicamento
-        # @@@ Sorteia duração dos exames/medicamentos
-        #duracao_medicamentoexames = randint(1,5)
-        duracao_medicamentoexames = duracao_evento(EXA)
-        # @@@ Agenda event_notice fim_medicamentosexames
-        insere_fel((clock + duracao_medicamentoexames, 'fim_medicamentosexames', paciente, evento_fel[3]))
-        #print("Inseriu na FEL: fim_medicamentosexames | hora:" + str(clock + duracao_medicamentoexames) + "| paciente: " + str(paciente.id) + "| medico: " + str(evento_fel[3].id))
-    # @@@ Existe paciente aguardando exames/medicamento - NÃO
-    else:
-        # @@@ Existe paciente aguardando triagem?
-        # @@@ Existe paciente aguardando triagem - SIM
-        if (len(fila_triagem) > 0):
+    
+    # @@@ Existe paciente aguardando triagem e medicamento?
+    # @@@ Existe paciente aguardando triagem e medicamento - SIM
+    if (len(fila_triagem) > 0 and len(fila_medicamentosexames) > 0):
+        # @@@ Sorteia se enfermeiro irá para triagem
+        if (randint(0, 100) < prioridade_triagem):
             paciente = fila_triagem.pop(0)
             # Calcula tempo em que paciente ficou na fila
             paciente.tempo_fila_triagem = clock - paciente.tempo_entrou_fila_triagem
@@ -464,12 +480,51 @@ def fim_medicamentosexames(evento_fel):
             #duracao_triagem = randint(1,5)
             duracao_triagem = duracao_evento(TRI)
             # @@@ Agenda event_notice fim_triagem
-            insere_fel( (clock + duracao_triagem, 'fim_triagem', paciente, evento_fel[3]) )
+            insere_fel((clock + duracao_triagem, 'fim_triagem', paciente, evento_fel[3]))
             #print("Inseriu na FEL: fim_triagem | hora:" + str(clock + duracao_triagem) + "| paciente: " + str(paciente.id) + "| enfermeiro: " + str(evento_fel[3].id))
-        # @@@ Existe paciente aguardando triagem - NÃO
+        # @@@ Sorteia se enfermeiro irá para medicamento
         else:
-            # @@@ Libera enfermerio
-            evento_fel[3].libera(clock)
+            paciente = fila_medicamentosexames.pop(0)
+            # Calcula tempo em que paciente ficou na fila
+            paciente.tempo_fila_medicamento = clock - paciente.tempo_entrou_fila_medicamento
+            # @@@ Sorteia duração dos exames/medicamentos
+            #duracao_medicamentoexames = randint(1,5)
+            duracao_medicamentoexames = duracao_evento(EXA)
+            # @@@ Agenda event_notice fim_medicamentosexames
+            insere_fel((clock + duracao_medicamentoexames, 'fim_medicamentosexames', paciente, evento_fel[3]))
+            #print("Inseriu na FEL: fim_medicamentosexames | hora:" + str(clock + duracao_medicamentoexames) + "| paciente: " + str(paciente.id) + "| enfermeiro: " + str(evento_fel[3].id))
+    # @@@ Existe paciente aguardando triagem e medicamento - NÃO
+    else:
+        # @@@ Existe paciente aguardando exames/medicamento?
+        # @@@ Existe paciente aguardando exames/medicamento - SIM
+        if len(fila_medicamentosexames) > 0:
+            paciente = fila_medicamentosexames.pop(0)
+            # Calcula tempo em que paciente ficou na fila
+            paciente.tempo_fila_medicamento = clock - paciente.tempo_entrou_fila_medicamento
+            # @@@ Sorteia duração dos exames/medicamentos
+            #duracao_medicamentoexames = randint(1,5)
+            duracao_medicamentoexames = duracao_evento(EXA)
+            # @@@ Agenda event_notice fim_medicamentosexames
+            insere_fel((clock + duracao_medicamentoexames, 'fim_medicamentosexames', paciente, evento_fel[3]))
+            #print("Inseriu na FEL: fim_medicamentosexames | hora:" + str(clock + duracao_medicamentoexames) + "| paciente: " + str(paciente.id) + "| medico: " + str(evento_fel[3].id))
+        # @@@ Existe paciente aguardando exames/medicamento - NÃO
+        else:
+            # @@@ Existe paciente aguardando triagem?
+            # @@@ Existe paciente aguardando triagem - SIM
+            if (len(fila_triagem) > 0):
+                paciente = fila_triagem.pop(0)
+                # Calcula tempo em que paciente ficou na fila
+                paciente.tempo_fila_triagem = clock - paciente.tempo_entrou_fila_triagem
+                # @@@ Sorteia duração da triagem
+                #duracao_triagem = randint(1,5)
+                duracao_triagem = duracao_evento(TRI)
+                # @@@ Agenda event_notice fim_triagem
+                insere_fel( (clock + duracao_triagem, 'fim_triagem', paciente, evento_fel[3]) )
+                #print("Inseriu na FEL: fim_triagem | hora:" + str(clock + duracao_triagem) + "| paciente: " + str(paciente.id) + "| enfermeiro: " + str(evento_fel[3].id))
+            # @@@ Existe paciente aguardando triagem - NÃO
+            else:
+                # @@@ Libera enfermerio
+                evento_fel[3].libera(clock)
 
 #####################################################################################################################
 #                                                                                                                   #
@@ -518,14 +573,12 @@ def insere_fila_prioridade(fila, paciente):
 #####################################################
 
 try:
-    kpi_ociosidade = sys.argv[1]
-    kpi_tempo = sys.argv[2]
-    kpi_tamanho = sys.argv[3]
+    entrada = sys.argv[1]
+    saida = sys.argv[2]
 except:
-    print("ERRO - PARAMETROS DE KPI ESPERADOS (OCIOSIDADE, TEMPO, TAMANHO) ")
-    print("OCIOSIDADE: atendente / enfermeiro / medico")
-    print("TEMPO: cadastro, triagem, atendimento, medicamento")
-    print("TAMANHO: cadastro, triagem, atendimento, medicamento")
+    print("ERRO - PARAMETROS")
+    print("python3 -B run.py entrada.txt saida.csv")
+    exit()
     exit()
 
 fel = [] # Lista temporal de atividades
@@ -548,8 +601,7 @@ tamanho_medio_triagem = 0
 tamanho_medio_atendimento = 0
 tamanho_medio_medicamento = 0
 
-prioridade_enfermeiro_triagem = 80 # probabilidade da prioridade ser triagem
-prioridade_enfermeiro_medicamentos = 20 # probabilidade da prioridade ser medicamento
+prioridade_triagem = 80 # probabilidade da prioridade ser triagem
 
 #VARIAVEIS GLOBAIS
 TTS = 0 # tempo maximo de simulacao em minutos
@@ -570,7 +622,7 @@ EXA =('',0.0,0.0,0.0) # distribuicao exames/medicamentos
 #                                                   #
 #####################################################
 
-le_arquivo('entrada.txt')
+le_arquivo(entrada)
 inicializa_fel()
 
 for i in range(ATD):
@@ -617,42 +669,31 @@ clock = TTS
 
 # KPIs
 
-print()
-print('OCIOSIDADE:')
-print()
-print('TEMPO OCIOSO ATENDENTES:')
+# OCIOSIDADE
+# Tempo ocioso dos Atendentes
 total_atendentes = 0 
 for atendente in atendentes:
     # Se estava ocioso na hora da finalização, calcula seu tempo ocioso
     if atendente.ocupado == False:
         atendente.set_tempo_ocioso(clock)
-    print(atendente.total_ocioso)
     total_atendentes += atendente.total_ocioso
-print('TEMPO OCIOSO ENFERMEIROS:')
+# Tempo ocioso dos Enfermeiros
 total_enfermeiros = 0
 for enfermeiro in enfermeiros:
     if enfermeiro.ocupado == False:
         enfermeiro.set_tempo_ocioso(clock)
-    print(enfermeiro.total_ocioso)
     total_enfermeiros += enfermeiro.total_ocioso
-print('TEMPO OCIOSO MEDICOS:')
+# Tempo ocioso dos Medicos
 total_medicos = 0
 for medico in medicos:
     if (medico.ocupado == False):
         medico.set_tempo_ocioso(clock)
-    print(medico.total_ocioso)
     total_medicos += medico.total_ocioso
+oa = total_atendentes / (TTS * len(atendentes))
+oe = total_enfermeiros / (TTS * len(enfermeiros))
+om = total_medicos / (TTS * len(medicos))
 
-if (kpi_ociosidade == 'atendente'):
-    ociosidade = total_atendentes
-if (kpi_ociosidade == 'enfermeiro'):
-    ociosidade = total_enfermeiros
-if (kpi_ociosidade == 'medico'):
-    ociosidade = total_medicos
-
-print()
-print('TEMPO MEDIO DE FILA:')
-print()
+# TEMPO MEDIO DE FILA
 # Se ainda existe pacientes em alguma fila, conta quanto tempo ele ficou
 for paciente in fila_cadastro:
     paciente.tempo_fila_cadastro = clock - paciente.tempo_entrou_fila_cadastro
@@ -666,50 +707,28 @@ media_cadastro = 0
 media_triagem = 0
 media_atendimento = 0
 media_medicamento = 0
+paciente_medicamento = 0
 for paciente in pacientes:
     media_cadastro += paciente.tempo_fila_cadastro
     media_triagem += paciente.tempo_fila_triagem
     media_atendimento += paciente.tempo_fila_atendimento
     media_medicamento += paciente.tempo_fila_medicamento
-    #print(' | C: ' + str(paciente.tempo_fila_cadastro) + ' | T: ' + str(paciente.tempo_fila_triagem) + ' | A: ' + str(paciente.tempo_fila_atendimento) + ' | M: ' + str(paciente.tempo_fila_medicamento))
+    if (paciente.exame_medi):
+        paciente_medicamento += 1
 media_cadastro = media_cadastro / len(pacientes)
 media_triagem = media_triagem / len(pacientes)
 media_atendimento = media_atendimento / len(pacientes)
-media_medicamento = media_medicamento / len(pacientes)
-print('CADASTRO: ' + str(media_cadastro))
-print('TRIAGEM: ' + str(media_triagem))
-print('ATENDIMENTO: ' + str(media_atendimento))
-print('MEDICAMENTOS/EXAMES: ' + str(media_medicamento))
+media_medicamento = media_medicamento / paciente_medicamento
+tec = media_cadastro
+tet = media_triagem
+tea = media_atendimento
+tem = media_medicamento
 
-if (kpi_tempo == 'cadastro'):
-    tempo = media_cadastro
-if (kpi_tempo == 'triagem'):
-    tempo = media_triagem
-if (kpi_tempo == 'atendimento'):
-    tempo = media_atendimento
-if (kpi_tempo == 'medicamento'):
-    tempo = media_medicamento
+# TAMANHO MEDIO DE FILA
+tac = tamanho_medio_cadastro / TTS
+tat = tamanho_medio_triagem / TTS
+taa = tamanho_medio_atendimento / TTS
+tam = tamanho_medio_medicamento / TTS
 
-print()
-print('TAMANHO MEDIO DE FILA:')
-print()
-tamanho_medio_cadastro = tamanho_medio_cadastro / TTS
-tamanho_medio_triagem = tamanho_medio_triagem / TTS
-tamanho_medio_atendimento = tamanho_medio_atendimento / TTS
-tamanho_medio_medicamento = tamanho_medio_medicamento / TTS
-print('CADASTRO: ' + str(tamanho_medio_cadastro))
-print('TRIAGEM: ' + str(tamanho_medio_triagem))
-print('ATENDIMENTO: ' + str(tamanho_medio_atendimento))
-print('MEDICAMENTOS/EXAMES: ' + str(tamanho_medio_medicamento))
-
-if (kpi_tamanho == 'cadastro'):
-    tamanho = tamanho_medio_cadastro
-if (kpi_tamanho == 'triagem'):
-    tamanho = tamanho_medio_triagem
-if (kpi_tamanho == 'atendimento'):
-    tamanho = tamanho_medio_atendimento
-if (kpi_tamanho == 'medicamento'):
-    tamanho = tamanho_medio_medicamento
-
-with open('resultados.csv', 'a+') as file:
-    file.write(str("%.2f" % ociosidade) + '\t' + str("%.2f" % tempo) + '\t' + str("%.2f" % tamanho) + '\n')
+with open(saida, 'a+') as file:
+    file.write(str("%.2f"%oa)+'\t'+str("%.2f"%oe)+'\t'+str("%.2f"%om)+'\t'+str("%.2f"%tec)+'\t'+str("%.2f"%tet)+'\t'+str("%.2f"%tea)+'\t'+str("%.2f"%tem)+'\t'+str("%.2f"%tac)+'\t'+str("%.2f"%tat)+'\t'+str("%.2f"%taa)+'\t'+str("%.2f"%tam)+'\n')
