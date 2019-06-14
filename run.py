@@ -12,18 +12,16 @@ import os
 import sys
 
 try:
-    kpi_ociosidade = sys.argv[1]
-    kpi_tempo = sys.argv[2]
-    kpi_tamanho = sys.argv[3]
+    entrada = sys.argv[1]
+    saida = sys.argv[2]
 except:
-    print("ERRO - PARAMETROS DE KPI ESPERADOS (OCIOSIDADE, TEMPO, TAMANHO) ")
-    print("OCIOSIDADE: atendente / enfermeiro / medico")
-    print("TEMPO: cadastro, triagem, atendimento, medicamento")
-    print("TAMANHO: cadastro, triagem, atendimento, medicamento")
+    print("ERRO - PARAMETROS")
+    print("python3 -B run.py entrada.txt saida.csv")
     exit()
 
-with open('resultados.csv', 'w') as file:
-    file.write('Ociosidade ' + kpi_ociosidade + '\tTemp. Med. ' + kpi_tempo + '\tTam. Med. ' + kpi_tamanho + '\n')
+with open(saida, 'w') as file:
+    file.write('OA\tOE\tOM\tTeMFC\tTeMFT\tTeMFA\tTeMFM\tTaMFC\tTaMFT\tTaMFA\tTaMFM\n')
 
 for i in range(100):
-    os.system('python3 -B main.py ' + sys.argv[1] + ' ' + sys.argv[2] + ' ' + sys.argv[3])
+    print(str(i+1) + 'ª Simulação')
+    os.system('python3 -B main.py ' + sys.argv[1] + ' ' + sys.argv[2])
