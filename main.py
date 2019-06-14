@@ -115,25 +115,6 @@ def duracao_evento(distribuicao):
         vetor = np.random.beta(distribuicao[1],distribuicao[2], 1)
         return round(float(vetor),1)
 
-    if distribuicao[0] == 'WEI':
-        pass
-    if distribuicao[0] == 'CAU':
-        pass
-    if distribuicao[0] == 'CHI':
-        pass
-    if distribuicao[0] == 'ERL':
-        pass
-    if distribuicao[0] == 'GAM':
-        pass
-    if distribuicao[0] == 'LOG':
-        pass
-    if distribuicao[0] == 'PAR':
-        pass
-    if distribuicao[0] == 'STU':
-        pass
-
-    pass
-
 #####################################################################################################################
 #                                                                                                                   #
 #                                                         FEL                                                       #
@@ -149,13 +130,14 @@ def inicializa_fel():
 
     global CHE, TTS
 
-    hora_chegada = [] #vetor com horarios
+    hora_chegada = [0] #vetor com horarios
     for i in range(TTS):
         if i<=TTS:
-            hora_chegada.append(duracao_evento(CHE))
+            chegada_atual = duracao_evento(CHE)
+            hora_chegada.append(hora_chegada[-1] + chegada_atual)
             if hora_chegada[-1] > TTS:
                 hora_chegada.pop()
-            i = i + duracao_evento(CHE)
+            i = i + chegada_atual
     hora_chegada.sort()
 
    # n_pacientes = 100
