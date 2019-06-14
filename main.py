@@ -130,7 +130,7 @@ def inicializa_fel():
 
     global CHE, TTS
 
-     hora_chegada = [0] #vetor com horarios
+    hora_chegada = [0] #vetor com horarios
     for i in range(TTS):
         if i<=TTS:
             chegada_atual = duracao_evento(CHE)
