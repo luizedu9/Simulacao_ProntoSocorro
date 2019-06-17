@@ -20,7 +20,7 @@
 
 # Tempo maximo de simulacao, em minutos. O valor abaixo 
 # corresponde a x dias * x horas * x minutos.
-T TTS 86400
+T TTS 1440
 
 ############################################################
 #                                                          #
@@ -29,10 +29,10 @@ T TTS 86400
 ############################################################
 
 # Probabilidade da necessidade de medicação/exames.
-P PRO 0.5
+P PRO 0.4
 
 # Prioridade do atendimento.
-P PRI 20 20 20 20 20
+P PRI 10 25 30 15 20
 
 ############################################################
 #                                                          #
@@ -41,10 +41,10 @@ P PRI 20 20 20 20 20
 ############################################################
 
 # Quantidade de médicos.
-Q MED 2
+Q MED 3
 
 # Quantidade de enfermeiras.
-Q ENF 4
+Q ENF 3
 
 # Quantidade de atendentes.
 Q ATD 2
@@ -73,16 +73,16 @@ Q ATD 2
 # OBS.: Os parâmetros não utilizados devem ser iguais a zero.
 #
 # Tempo de chegada do paciente.
-T CHE EXP 10 0 0
+T CHE EXP 0.1 0 0
 
 # Tempo de cadastro.
-T CAD TRI 1 2 5
+T CAD TRI 2 4 10
 
 # Tempo de triagem.
-T TRI TRI 3 5 7
+T TRI NOR 5.25 1.21 0
 
 # Tempo de atendimento.
-T ATE TRI 10 15 20
+T ATE NOR 8.45 3.23 0
 
 # Tempo de exames/medicamentos.
-T EXA TRI 10 15 22
+T EXA NOR 28.3 5.63 0
