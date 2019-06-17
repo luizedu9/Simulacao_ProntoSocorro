@@ -20,7 +20,7 @@
 
 # Tempo maximo de simulacao, em minutos. O valor abaixo 
 # corresponde a x dias * x horas * x minutos.
-T TTS 1440
+T TTS 60
 
 ############################################################
 #                                                          #
@@ -41,7 +41,7 @@ P PRI 10 25 30 15 20
 ############################################################
 
 # Quantidade de médicos.
-Q MED 3
+Q MED 1
 
 # Quantidade de enfermeiras.
 Q ENF 3

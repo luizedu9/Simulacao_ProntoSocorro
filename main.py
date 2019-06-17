@@ -408,7 +408,7 @@ def fim_atendimento(evento_fel):
             # @@@ Coloca paciente na fila de exames/medicamentos
             insere_fila_prioridade(fila_medicamentosexames, evento_fel[2])
             # Tempo que paciente entrou na fila
-            evento_fel[2].tempo_entrou_fila_medicamentosexames = clock
+            evento_fel[2].tempo_entrou_fila_medicamento = clock
 
     # @@@ Paciente precisa de medicamentos/exame - NÃO
     else:
@@ -591,7 +591,6 @@ while (len(fel) > 0) and (clock <= TTS):
             tamanho_medio_triagem += len(fila_triagem)
             tamanho_medio_atendimento += len(fila_atendimento)
             tamanho_medio_medicamento += len(fila_medicamentosexames)
-
         clock_anterior = clock
 
     # Retira o evento que será computado
@@ -630,12 +629,12 @@ while (len(fel) > 0) and (clock <= TTS):
 
     else:
         hora = hora +'min:'+str(segundos) + 's'
-
+    """
     if evento_fel[3] != None:
         print('Retirou da FEL: ' + str(evento_fel[1]) + '| hora: ' + hora + ' | paciente: '+str(evento_fel[2].id+1)+' | '+ str(evento_fel[3].cargo) +': '+ str(evento_fel[3].id+1))
     else:
         print('Retirou da FEL: ' + str(evento_fel[1]) + '| hora: ' +hora+ ' | paciente: '+ str(evento_fel[2].id+1))
-
+	"""
 
     # Muda o relogio para o tempo atual
     clock = evento_fel[0]
@@ -697,7 +696,10 @@ for paciente in pacientes:
 media_cadastro = media_cadastro / len(pacientes)
 media_triagem = media_triagem / len(pacientes)
 media_atendimento = media_atendimento / len(pacientes)
-media_medicamento = media_medicamento / paciente_medicamento
+try:
+	media_medicamento = media_medicamento / paciente_medicamento
+except:
+	media_medicamento = 0
 tec = media_cadastro
 tet = media_triagem
 tea = media_atendimento

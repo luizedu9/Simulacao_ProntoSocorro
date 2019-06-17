@@ -18,8 +18,8 @@ class Medico:
         self.cargo = 'Medico'
 
     # Quando alocar para uma ação, olhar horario atual e o horario em que começou a ficar ocioso 
-    def set_tempo_ocioso(self, horario_atual):
-        self.total_ocioso += horario_atual - self.inicio_horario_ocioso
+    def set_tempo_ocioso(self, clock):
+        self.total_ocioso += clock - self.inicio_horario_ocioso
         return
 
     # Se foi liberado, quer dizer que se deu inicio ao tempo ocioso, então libera e guarda o inicio do tempo ocioso 
