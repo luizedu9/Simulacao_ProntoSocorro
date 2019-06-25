@@ -20,7 +20,7 @@ except:
     exit()
 
 with open(saida, 'w') as file:
-    file.write('OA\tOE\tOM\tTeMFC\tTeMFT\tTeMFA\tTeMFM\tTaMFC\tTaMFT\tTaMFA\tTaMFM\n')
+    file.write('OG\tOA\tOE\tOM\tTeG\tTeP1\tTeP2\tTeP3\tTeP4\tTeP5\tTeMFC\tTeMFT\tTeMFA\tTeMFM\tTaG\tTaMFC\tTaMFT\tTaMFA\tTaMFM\n')
 
 for i in range(100):
     print(str(i+1) + 'ª Simulação')

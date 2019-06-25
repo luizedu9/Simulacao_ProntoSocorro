@@ -8,21 +8,6 @@
 #   Flávia Santos Ribeiro
 #   Luiz Eduardo Pereira    
 
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#
-#                                                     ATENÇÃO !!!
-#
-#   Aqui serão descritos coisas a fazer:
-#      - Fazer tratamento da distribuicao de enfermeiros entre a triagem e medicamentos
-#      - Debugar para ver se está correto
-#      - olhar artigo para saber as distribuicoes do arquivo de entrada
-#
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 from random import randint
 import random
 import numpy as np
@@ -63,7 +48,12 @@ def le_arquivo(nome):
                 if linha[1] == 'PRO':
                     PRO = float(linha[2])
                 elif linha[1] == 'PRI':
-                    PRI = (int(linha[2]),int(linha[3]), int(linha[4]), int(linha[5]), int(linha[6]))
+                    PRI = [int(linha[2]),int(linha[3]), int(linha[4]), int(linha[5]), int(linha[6])]
+                    PRI[1] = PRI[0] + PRI[1]
+                    PRI[2] = PRI[1] + PRI[2]
+                    PRI[3] = PRI[2] + PRI[3]
+                    PRI[4] = PRI[3] + PRI[4]
+                    PRI = (PRI[0], PRI[1], PRI[2], PRI[3], PRI[4])
             elif linha[0] == 'Q':
                 if linha[1] == 'MED':
                     MED = int(linha[2])
@@ -634,7 +624,7 @@ while (len(fel) > 0) and (clock <= TTS):
         print('Retirou da FEL: ' + str(evento_fel[1]) + '| hora: ' + hora + ' | paciente: '+str(evento_fel[2].id+1)+' | '+ str(evento_fel[3].cargo) +': '+ str(evento_fel[3].id+1))
     else:
         print('Retirou da FEL: ' + str(evento_fel[1]) + '| hora: ' +hora+ ' | paciente: '+ str(evento_fel[2].id+1))
-	"""
+    """
 
     # Muda o relogio para o tempo atual
     clock = evento_fel[0]
@@ -670,6 +660,8 @@ for medico in medicos:
 oa = total_atendentes / (TTS * len(atendentes))
 oe = total_enfermeiros / (TTS * len(enfermeiros))
 om = total_medicos / (TTS * len(medicos))
+# Tempo ocioso geral
+og = (oa + oe + om) / 3
 
 # TEMPO MEDIO DE FILA
 # Se ainda existe pacientes em alguma fila, conta quanto tempo ele ficou
@@ -686,30 +678,115 @@ media_triagem = 0
 media_atendimento = 0
 media_medicamento = 0
 paciente_medicamento = 0
+prioridade1 = 0
+prioridade2 = 0
+prioridade3 = 0
+prioridade4 = 0
+prioridade5 = 0
+n_prioridade1 = 0
+n_prioridade2 = 0
+n_prioridade3 = 0
+n_prioridade4 = 0
+n_prioridade5 = 0
 for paciente in pacientes:
+    prioridade_temp = 0
     media_cadastro += paciente.tempo_fila_cadastro
     media_triagem += paciente.tempo_fila_triagem
     media_atendimento += paciente.tempo_fila_atendimento
     media_medicamento += paciente.tempo_fila_medicamento
     if (paciente.exame_medi):
         paciente_medicamento += 1
+    if (paciente.prioridade == 1):
+        prioridade_temp += paciente.tempo_fila_cadastro
+        prioridade_temp += paciente.tempo_fila_triagem
+        prioridade_temp += paciente.tempo_fila_atendimento
+        prioridade_temp += paciente.tempo_fila_medicamento
+        prioridade1 += prioridade_temp / 4
+        n_prioridade1 += 1
+    elif (paciente.prioridade == 2):
+        prioridade_temp += paciente.tempo_fila_cadastro
+        prioridade_temp += paciente.tempo_fila_triagem
+        prioridade_temp += paciente.tempo_fila_atendimento
+        prioridade_temp += paciente.tempo_fila_medicamento
+        prioridade2 += prioridade_temp / 4
+        n_prioridade2 += 1
+    elif (paciente.prioridade == 3):
+        prioridade_temp += paciente.tempo_fila_cadastro
+        prioridade_temp += paciente.tempo_fila_triagem
+        prioridade_temp += paciente.tempo_fila_atendimento
+        prioridade_temp += paciente.tempo_fila_medicamento
+        prioridade3 += prioridade_temp / 4
+        n_prioridade3 += 1
+    elif (paciente.prioridade == 4):
+        prioridade_temp += paciente.tempo_fila_cadastro
+        prioridade_temp += paciente.tempo_fila_triagem
+        prioridade_temp += paciente.tempo_fila_atendimento
+        prioridade_temp += paciente.tempo_fila_medicamento
+        prioridade4 += prioridade_temp / 4
+        n_prioridade4 += 1
+    elif (paciente.prioridade == 5):
+        prioridade_temp += paciente.tempo_fila_cadastro
+        prioridade_temp += paciente.tempo_fila_triagem
+        prioridade_temp += paciente.tempo_fila_atendimento
+        prioridade_temp += paciente.tempo_fila_medicamento
+        prioridade5 += prioridade_temp / 4
+        n_prioridade5 += 1
+
 media_cadastro = media_cadastro / len(pacientes)
 media_triagem = media_triagem / len(pacientes)
 media_atendimento = media_atendimento / len(pacientes)
 try:
-	media_medicamento = media_medicamento / paciente_medicamento
+    media_medicamento = media_medicamento / paciente_medicamento
 except:
-	media_medicamento = 0
+    media_medicamento = 0
+if (n_prioridade1 == 0):
+    n_prioridade1 = 1
+if (n_prioridade2 == 0):
+    n_prioridade2 = 1
+if (n_prioridade3 == 0):
+    n_prioridade3 = 1
+if (n_prioridade4 == 0):
+    n_prioridade4 = 1
+if (n_prioridade5 == 0):
+    n_prioridade5 = 1
+tep1 = prioridade1 / n_prioridade1
+tep2 = prioridade2 / n_prioridade2
+tep3 = prioridade3 / n_prioridade3
+tep4 = prioridade4 / n_prioridade4
+tep5 = prioridade5 / n_prioridade5
 tec = media_cadastro
 tet = media_triagem
 tea = media_atendimento
 tem = media_medicamento
+# Tempo medio de fila geral
+teg = (tec + tet + tea + tem) / 4 
 
 # TAMANHO MEDIO DE FILA
 tac = tamanho_medio_cadastro / TTS
 tat = tamanho_medio_triagem / TTS
 taa = tamanho_medio_atendimento / TTS
 tam = tamanho_medio_medicamento / TTS
+# Tamanho medio de fila geral
+tag = (tac + tat + taa + tam) / 4
 
 with open(saida, 'a+') as file:
-    file.write(str("%.2f"%oa)+'\t'+str("%.2f"%oe)+'\t'+str("%.2f"%om)+'\t'+str("%.2f"%tec)+'\t'+str("%.2f"%tet)+'\t'+str("%.2f"%tea)+'\t'+str("%.2f"%tem)+'\t'+str("%.2f"%tac)+'\t'+str("%.2f"%tat)+'\t'+str("%.2f"%taa)+'\t'+str("%.2f"%tam)+'\n')
+    file.write(
+        str("%.2f"%og)+'\t'+
+        str("%.2f"%oa)+'\t'+
+        str("%.2f"%oe)+'\t'+
+        str("%.2f"%om)+'\t'+
+        str("%.2f"%teg)+'\t'+
+        str("%.2f"%tep1)+'\t'+
+        str("%.2f"%tep2)+'\t'+
+        str("%.2f"%tep3)+'\t'+
+        str("%.2f"%tep4)+'\t'+
+        str("%.2f"%tep5)+'\t'+
+        str("%.2f"%tec)+'\t'+
+        str("%.2f"%tet)+'\t'+
+        str("%.2f"%tea)+'\t'+
+        str("%.2f"%tem)+'\t'+
+        str("%.2f"%tag)+'\t'+
+        str("%.2f"%tac)+'\t'+
+        str("%.2f"%tat)+'\t'+
+        str("%.2f"%taa)+'\t'+
+        str("%.2f"%tam)+'\n')
