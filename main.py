@@ -661,7 +661,7 @@ oa = total_atendentes / (TTS * len(atendentes))
 oe = total_enfermeiros / (TTS * len(enfermeiros))
 om = total_medicos / (TTS * len(medicos))
 # Tempo ocioso geral
-og = (oa + oe + om) / 3
+og = ((oa * len(atendentes)) + (oe * len(enfermeiros)) + (om * len(medicos))) / (len(atendentes) + len(enfermeiros) + len(medicos))
 
 # TEMPO MEDIO DE FILA
 # Se ainda existe pacientes em alguma fila, conta quanto tempo ele ficou
@@ -688,57 +688,52 @@ n_prioridade2 = 0
 n_prioridade3 = 0
 n_prioridade4 = 0
 n_prioridade5 = 0
+media_total = 0
 for paciente in pacientes:
-    prioridade_temp = 0
     media_cadastro += paciente.tempo_fila_cadastro
     media_triagem += paciente.tempo_fila_triagem
     media_atendimento += paciente.tempo_fila_atendimento
     media_medicamento += paciente.tempo_fila_medicamento
+    media_total = media_cadastro + media_triagem + media_atendimento + media_medicamento
     if (paciente.exame_medi):
         paciente_medicamento += 1
     if (paciente.prioridade == 1):
-        prioridade_temp += paciente.tempo_fila_cadastro
-        prioridade_temp += paciente.tempo_fila_triagem
-        prioridade_temp += paciente.tempo_fila_atendimento
-        prioridade_temp += paciente.tempo_fila_medicamento
-        prioridade1 += prioridade_temp / 4
+        prioridade1 += paciente.tempo_fila_cadastro
+        prioridade1 += paciente.tempo_fila_triagem
+        prioridade1 += paciente.tempo_fila_atendimento
+        prioridade1 += paciente.tempo_fila_medicamento
         n_prioridade1 += 1
     elif (paciente.prioridade == 2):
-        prioridade_temp += paciente.tempo_fila_cadastro
-        prioridade_temp += paciente.tempo_fila_triagem
-        prioridade_temp += paciente.tempo_fila_atendimento
-        prioridade_temp += paciente.tempo_fila_medicamento
-        prioridade2 += prioridade_temp / 4
+        prioridade2 += paciente.tempo_fila_cadastro
+        prioridade2 += paciente.tempo_fila_triagem
+        prioridade2 += paciente.tempo_fila_atendimento
+        prioridade2 += paciente.tempo_fila_medicamento
         n_prioridade2 += 1
     elif (paciente.prioridade == 3):
-        prioridade_temp += paciente.tempo_fila_cadastro
-        prioridade_temp += paciente.tempo_fila_triagem
-        prioridade_temp += paciente.tempo_fila_atendimento
-        prioridade_temp += paciente.tempo_fila_medicamento
-        prioridade3 += prioridade_temp / 4
+        prioridade3 += paciente.tempo_fila_cadastro
+        prioridade3 += paciente.tempo_fila_triagem
+        prioridade3 += paciente.tempo_fila_atendimento
+        prioridade3 += paciente.tempo_fila_medicamento
         n_prioridade3 += 1
     elif (paciente.prioridade == 4):
-        prioridade_temp += paciente.tempo_fila_cadastro
-        prioridade_temp += paciente.tempo_fila_triagem
-        prioridade_temp += paciente.tempo_fila_atendimento
-        prioridade_temp += paciente.tempo_fila_medicamento
-        prioridade4 += prioridade_temp / 4
+        prioridade4 += paciente.tempo_fila_cadastro
+        prioridade4 += paciente.tempo_fila_triagem
+        prioridade4 += paciente.tempo_fila_atendimento
+        prioridade4 += paciente.tempo_fila_medicamento
         n_prioridade4 += 1
     elif (paciente.prioridade == 5):
-        prioridade_temp += paciente.tempo_fila_cadastro
-        prioridade_temp += paciente.tempo_fila_triagem
-        prioridade_temp += paciente.tempo_fila_atendimento
-        prioridade_temp += paciente.tempo_fila_medicamento
-        prioridade5 += prioridade_temp / 4
+        prioridade5 += paciente.tempo_fila_cadastro
+        prioridade5 += paciente.tempo_fila_triagem
+        prioridade5 += paciente.tempo_fila_atendimento
+        prioridade5 += paciente.tempo_fila_medicamento
         n_prioridade5 += 1
 
 media_cadastro = media_cadastro / len(pacientes)
 media_triagem = media_triagem / len(pacientes)
 media_atendimento = media_atendimento / len(pacientes)
-try:
-    media_medicamento = media_medicamento / paciente_medicamento
-except:
-    media_medicamento = 0
+if (paciente_medicamento == 0):
+    paciente_medicamento = 1
+media_medicamento = media_medicamento / paciente_medicamento    
 if (n_prioridade1 == 0):
     n_prioridade1 = 1
 if (n_prioridade2 == 0):
@@ -759,7 +754,7 @@ tet = media_triagem
 tea = media_atendimento
 tem = media_medicamento
 # Tempo medio de fila geral
-teg = (tec + tet + tea + tem) / 4 
+teg = media_total / len(pacientes)
 
 # TAMANHO MEDIO DE FILA
 tac = tamanho_medio_cadastro / TTS
