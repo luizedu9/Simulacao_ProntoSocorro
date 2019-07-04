@@ -8,9 +8,9 @@ Simulador de um Pronto Socorro
 Trabalho para a disciplina de Introdução a Simulação
 
 Autores:
-Bruna Cristina Mendes
-Flávia Santos Ribeiro
-Luiz Eduardo Pereira   
+Bruna Cristina Mendes,
+Flávia Santos Ribeiro,
+Luiz Eduardo Pereira. 
 
 # Objetivo:
 
