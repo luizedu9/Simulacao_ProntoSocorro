@@ -3,9 +3,7 @@
 Instituto Federal de Educação, Ciência e Tecnologia de Minas Gerais, IFMG - Campus Formiga
 Ciência da Computação
 
-Simulador de um Pronto Socorro
-
-Trabalho para a disciplina de Introdução a Simulação
+Simulação de um Pronto Socorro em Python para a disciplina Introdução à Simulação.
 
 Autores:
 Bruna Cristina Mendes,
