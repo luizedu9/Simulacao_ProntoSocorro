@@ -28,5 +28,6 @@ config.txt possui todos os parametros de entrada do programa, como tempo de simu
 Para analisar resultados entre duas amostras:
 
 Rscript output-analysis-script.r
+Arquivos necessarios: amostra1.csv, amostra2.csv
 
 Código cedido pelo Prof. Me. Diego Mello da Silva
