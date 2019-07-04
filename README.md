@@ -31,3 +31,7 @@ Rscript output-analysis-script.r
 Arquivos necessarios: amostra1.csv, amostra2.csv
 
 Código cedido pelo Prof. Me. Diego Mello da Silva
+
+Referencia para as distribuições utilizadas:
+Silva, L. P. “Análise de Cenários em um Sistema de Pronto Socorro
+Atendimento Utilizando Simulação Discreta”. <https://bit.ly/2JelTs7>
