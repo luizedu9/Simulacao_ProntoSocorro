@@ -16,7 +16,7 @@ Luiz Eduardo Pereira.
 
 O objetivo deste trabalho era criar um simulador para um Pronto Socorro para sugerir mudanças na composição de funcionarios.
 Para isso leva-se em conta 3 KPIs (Key Performance Indicator) medidos. Ociosidade, Tempo Medio em Fila e Tamanho Medio em Fila.
-Para entender como o simulador funciona, olhar o DCA e os Envent Listeners disponiveis na pasta Projeto.
+Para entender como o simulador funciona, olhar o DCA (Diagrama de Ciclo de Atividades) e os Envent Listeners disponiveis na pasta Projeto.
 
 # Execução:
 
