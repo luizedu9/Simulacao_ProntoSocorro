@@ -11,6 +11,12 @@ Bruna Cristina Mendes,
 Flávia Santos Ribeiro,
 Luiz Eduardo Pereira. 
 
+# Artigo
+
+Este trabalho foi utilizado para uma publicação de artigo no III Seminário de Pesquisa e Inovação do IFMG – Campus Formiga. 
+
+[Artigo](https://github.com/luizedu9/Artigo)
+
 # Objetivo:
 
 O objetivo deste trabalho era criar um simulador para um Pronto Socorro para sugerir mudanças na composição de funcionarios.
